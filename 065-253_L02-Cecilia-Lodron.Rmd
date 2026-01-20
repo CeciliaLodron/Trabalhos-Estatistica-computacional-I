@@ -1,0 +1,59 @@
+---
+title: "065-253_L02-Cecilia-Lodron"
+author: "Cecilia Lodron Gonzaga"
+date: "2025-11-28"
+output: html_document
+---
+Gerar 100 números aleatórios de uma variável aleatória exponencial dupla padrão, conforme os seguintes métodos discutidos em sala:
+
+Método de transformação inversa, a partir da função quantílica
+```{r}
+set.seed(666)
+
+rexpd.inv <- function(x){
+  u <- runif(1)
+  x <- ifelse(u<0.5, log(2*u), -log(2*(1-u)))
+  return(x)
+}
+
+amostra <- sapply(1:100, rexpd.inv)
+c <- hist(amostra, freq = F)
+c
+
+str(c$density)
+```
+
+Método da convolução, a partir da diferença entre duas exponenciais padrão 
+
+```{r}
+set.seed(666)
+
+rexpd.conv <- function(x){
+  u <- runif(2)
+  y <- -log(u)
+  Z <- diff(y)
+  return(Z)
+}
+
+amostra <- sapply(1:100, rexpd.conv)
+hist(amostra, freq = FALSE, xlim = c(-4, 4))
+```
+
+Método da transformação, a partir do valor absoluta de uma exponencial padrão.
+
+```{r}
+set.seed(666)
+
+rexpd.trans <- function(x){
+  u1 <- runif(1)
+  u2 <- runif(2)
+  x1 <- -log(u1)
+  X <- ifelse(u2<0.5, x1, -x1)
+  return (X)
+}
+
+amostra <- sapply(1:100, rexpd.trans)
+
+hist(amostra, freq = F, xlim = c(-4, 4))
+```
+
