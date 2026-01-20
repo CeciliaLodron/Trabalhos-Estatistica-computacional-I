@@ -1,0 +1,180 @@
+---
+title: "Estudo Dirigido sobre Funções Recursivas (2025/3)"
+author: "Cecilia"
+date: "2026-01-07"
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    toc_depth: 3
+    toc_float: true
+---
+
+## Média móvel exponencialmente ponderada (EWMA) 
+É amplamente usada em modelagem de séries temporais e em previsões e em monitoramento de média de característica de qualidade de processo industrial
+- Fórmula:
+  - $yi=λx_{i}+(1−λ)Y_{i}−1$, com $0<λ≤1$ e $Y_{0}=μ_{0}$
+- Continuando a substituir recursivamente $Y_{i}−j$, $j=2,3,…,i$, obtemos:
+  - $Yi=λ\sum_{j=0}^{i-1}(1−λ)^j\bar X_{i−j}+(1−λ)^iY_{0}$
+- Essa função pode ser codificada da seguinte forma:
+
+```{r echo=TRUE}
+ewma1 <- function(x, lambda, mi0){
+        Y <- numeric(length(x) + 1)
+        Y[1] <- mi0
+        for(i in seq_along(Y)[-1]){
+            Y[i] <- lambda*x[i - 1] + (1 - lambda)*Y[i - 1]
+        }
+        return(Y)
+}
+```
+
+- Importanto o banco de dados
+```{r echo=FALSE}
+dados <- c(
+  100.23,100.19,102.02,99.59,99.81,99.86,99.60,100.35,99.38,100.83,
+  99.73,98.00,99.72,101.34,98.77,99.94,99.47,99.95,100.33,99.57,
+  100.82,100.23,100.68,101.64,100.86,99.28,101.41,100.21,101.85,
+  101.43,103.00
+)
+```
+
+- Cálculo da EWMA
+```{r echo=TRUE}
+alvo <- 100
+peso <- 0.2
+
+medias.ew1 <- ewma1(x = dados, lambda = 0.2, mi0 = alvo)
+medias.ew1
+```
+
+- Grafico da média
+```{r}
+plot(medias.ew1, type = "o", pch = 19, xlab = "Amostra")
+```
+
+### Exercício de média móvel exponencialmente ponderada (EWMA)
+Baseando-se na equação de recorrência advinda das expressão de Yi, elabore uma função em R para cálculo da média nóvel exponencialmente ponderada das observações  individuais de característica de qualidade, armazenadas no conjunto de dados Tab7.1-Costa.txt. No código deve-se utilizar obrigatoriamente a abordagem recursiva. Compare (e comente) o desempenho de sua função com aquela baseada na abordagem iterativa (loop em for) que foi apresentada nesse texto (função ewma()).
+
+Vamos agora modificar a função ewma(), na qual será feito o mesmo cálculo, porém utilizando apenas recursividade.
+
+- Função ewma2:
+```{r}
+ewma2 <- function(x, lambda, mi0){
+  ewma3 <- function(i, Y){
+    if(i>length(x)+1) return(Y)
+    else{
+      Y[i] <- lambda*x[i - 1] + (1 - lambda)*Y[i - 1]
+      ewma3(i+1, Y)
+    }
+  }
+  Y <- numeric(length(x) + 1)
+  Y[1] <- mi0
+  ewma3(2, Y)
+}
+
+```
+
+Neste código, criamos uma função ewma3 para fazer recursivamente o cálculo de Y por índice, com a condição de parada, que no caso é se o tamanho do conjunto de dados +1 é menor que o próprio índice, semelhante ao for da função com for. Quando o critério de parada é atendido, retorna o valor de Y e volta por todos os valores novamente.
+
+- Cálculo da EWMA com recursividade
+```{r}
+alvo <- 100
+peso <- 0.2
+
+medias.ew2 <- ewma2(x = dados, lambda = 0.2, mi0 = alvo)
+medias.ew2
+```
+
+#### Comparação de desempenho:
+- Método iterativo
+```{r message=FALSE, warning=FALSE}
+system.time(replicate(1000, ewma1(dados, 0.2, 100)))["elapsed"]
+
+```
+
+- Método recursivo
+```{r message=FALSE, warning=FALSE}
+system.time(replicate(1000, ewma2(dados, 0.2, 100)))["elapsed"]
+```
+
+Podemos perceber que o tempo de forma recursiva é maior, isso por que o processamento do for da função ewma1 percorre por todo o vetor uma só vez, o que faz seu processamento mais rápido, enquanto com a recursividade está sempre alocando memória com a chamada de função.
+
+
+## Coeficientes Binomiais
+Os coeficientes binomiais são números inteiros positivos que ocorrem como componentes no teorema binomial, um teorema importante com aplicações em vários algoritmos de aprendizagem de máquinas e em Estatística.
+
+- Pode ser expresso pela seguinte fórmula:
+  - ${n \choose k} = \frac{n!}{k!(n-K)!}$
+  
+- Essa expressão pode ser codificada recursivamente da seguinte forma:
+```{r}
+coefBin <- function(n, k){
+  if(k > n) return(0)
+  if(k == 0 || k == n) return(1)
+
+  valor <- coefBin(n - 1, k - 1) + coefBin(n - 1, k)
+  return(valor)
+}
+```
+
+- Utilizando o método iterativo, temos:
+```{r}
+coefBin.iter <- function(n, k){
+  if(n - k < k) num <- k else num <- (n - k)
+  res <- 1
+  for(i in 1:(n - num)){ res <- res*(1 + num/i)}
+  return(res)
+}
+```
+
+- Calculando o mesmo valor com as duas funções:
+```{r}
+a <- 4
+b <- 2
+coefBin(n = a, k = b)
+coefBin.iter(n = a, k = b)
+
+#cálculo sem função
+fun <- function(n, k){
+  vet.k <- 1:k
+  prod((n - vet.k + 1)/vet.k)
+}
+fun(4, 4)
+```
+
+
+As funções do R Base choose() e lchoose() tem como saída os coeficientes binomiais e seus logaritmos, respectivamente. Note que choose(n, k) é a função relevante em R para calcular coeficientes binomiais, sendo definida para $n∈R$ e $k∈Z$. Para $k≥1$ é definido como $n(n−1)…(n−k+1)/k!$, como $1$, para $k=0$ e como $0$, para $k<0$.
+
+### Exercício Coeficientes Binomiais
+Baseando-se na equação de recorrência advinda das expressões $(I)$ OU $(II)$, elabore uma função em R para cálculo de coeficiente binomial definida para $n∈R$ e $k∈Z$. No código deve-se utilizar obrigatoriamente a abordagem recursiva. Compare (e comente) o desempenho de sua função com aquela baseada em recursão multinomial e com a função choose(), do R Base.
+
+- Primeiramente definimos as funções coefbin.rec, definida em n nos reais e k nos inteiros, baseada na equação (I)
+
+```{r}
+coefbin.rec <- function(n, k){
+  if (k < 0) return(0)
+  if (k == 0) return(1)
+  
+  (n/k)*coefbin.rec(n-1, k-1)
+}
+```
+
+#### Comparando desempenho
+
+- Método com recursão multinomial
+```{r}
+system.time(replicate(10000, coefBin(15.1, 5)))["elapsed"]
+```
+
+- Método recursivo
+```{r}
+system.time(replicate(1000, coefbin.rec(15.1, 5)))["elapsed"]
+```
+
+- Método iterativo
+```{r}
+system.time(replicate(1000, fun(15.1, 5)))["elapsed"]
+```
+
+Podemos que o pior método, em desempenho, é a recursão multinomial, isso por que a função coefBin() utiliza a recursivamente duas vezes dentro da função, na ordem $O(n^2)$. Já os outros algoritmos tem um desempenho melhor, porém o método iterativo tem uma diferença pequena de tempo de processamento em relação ao método recursivo, porém como seu algoritmo funciona de forma vetorizada, se torna um método mais rápido para grandes intervalos entre $n$ e $k$, já que quanto maior o n e menor o k, maior o tempo de processamento da função.

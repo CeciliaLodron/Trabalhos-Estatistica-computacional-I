@@ -1,0 +1,367 @@
+---
+title: "065-253_L01-Cecilia-Lodron"
+author: "Cecilia Lodron Gonzaga"
+date: "2025-11-06"
+output: html_document
+---
+
+
+## 1. Matriz simples.
+### a. Construa a matriz dada e denomine como minhaMat.
+
+Resposta
+```{r}
+a <- c(6, 34, 923, 5, 0)
+b <- c(112:116)
+c <- c(5, 9, 34, 76, 2)
+d <- c(545:549)
+minhamat <- cbind(a, b, c, d)
+minhamat
+```
+
+### b. Obtenha a média de cada linha.
+
+Resposta
+```{r}
+apply(minhamat, 1, mean)
+```
+
+### c. Obtenha a média de cada coluna.
+
+Resposta
+
+```{r}
+apply(minhamat, 2, mean, na.rm = TRUE)
+```
+
+### d. Ordene as colunas em ordem ascendente
+
+Resposta
+
+```{r}
+apply(minhamat, 2, sort)
+```
+
+###  Use a função apply para executar a operação módulo da divisão por 10 em cada elemento da matriz (A nova matriz contém o resto da divisão por 10).
+
+Resposta
+
+```{r}
+apply(minhamat, 1, function(x) x%%10)
+```
+
+## 2. Conjunto de dados mtcars.
+
+### a. Use três funções da família apply para o obter o mínimo de cada coluna do conjunto de dados. Armazene cada resultado em um objeto separado (l, s e m) e mostre suas saídas.
+
+Resposta
+
+```{r}
+l <- apply(mtcars, 2, min) #retorna um vetor
+s <- lapply(mtcars, min) #retorna uma lista
+m <- sapply(mtcars, min) #retorna um vetor
+l
+s
+m
+```
+
+### b. Coloque os três objetos l, s e m na lista lista.objetos.
+
+Resposta
+
+```{r}
+lista.objetos <- list(l, s, m)
+```
+
+### c. Use uma função apply adequada para obter a classe de cada um dos três elementos da lista lista.objetos.
+
+Resposta
+
+```{r}
+lapply(lista.objetos, class)
+```
+
+### d. Qual a classe da saída de cada uma das três funções usadas no exercício?
+
+Resposta
+"numeric" "list" "numeric"
+
+### e. Repita o exercício usando estruturas de controle. Compare o tempo entre as duas abordagens (Estruturas de controle e família apply).
+
+Resposta
+
+```{r}
+g <- function(lista) {
+  classe <- vector("character", length(lista))
+  for (i in 1:length(lista)) {
+    classe[i] <- class(lista[[i]])
+  }
+  return(classe)
+}
+
+g(lista.objetos)
+
+system.time(replicate(10000, lapply(lista.objetos, class)))
+system.time(replicate(10000,{
+    classes <- character(length(lista.objetos))
+    for (i in 1:length(lista.objetos)) {
+      classes[i] <- class(lista.objetos[[i]])
+    }
+  }))
+```
+
+
+## 3. Função mapply.
+
+### a. Use a função mapply para obter uma lista de 10 elementos. O primeiro elemento da lista é uma sequência de 10 caracteres “A”; a segunda, 9 caracteres “F”, que seguem alternando-se até o último elemento o qual possui um único caractere.
+
+Resposta
+
+```{r}
+c <- rep(c("A", "F"), length.out = 10)
+r <- 10:1
+
+lista1 <- mapply(rep, c, r, SIMPLIFY = F)
+lista1
+```
+
+### b. Ajuste a função para obter a numeração adequada de cada elemento da lista. Dica: argumento USE.NAMES
+
+Resposta
+
+```{r}
+lista2<- mapply(rep, c, r, USE.NAMES = T, SIMPLIFY = F)
+lista2
+```
+
+### c. Repita o exercício usando estruturas de controle. Compare o tempo entre as duas abordagens (Estruturas de controle e família apply).
+
+Resposta
+
+```{r}
+f <- function(n) {
+  c <- rep(c("A", "F"), length.out = n)
+  r <- n:1
+  lista <- vector("list", n)
+  
+  for (i in 1:n) {
+    lista[[i]] <- rep(c[i], r[i])
+  }
+  return(lista)
+}
+
+lista3 <- f(10)
+lista3
+
+system.time(replicate(10000, mapply(rep, c, r, USE.NAMES = T, SIMPLIFY = F)))
+system.time(replicate(10000, {
+  c <- rep(c("A", "F"), length.out = 10)
+  r <- 10:1
+  lista <- vector("list", 10)
+  
+  for (i in 1:10) {
+    lista[[i]] <- rep(c[i], r[i])
+  }
+}))
+```
+
+## 4. Sobrevivência dos passageiros do Titanic – conjunto de dados Titanic{datasets}:
+
+### a. Use uma função apply apropriada para obter a soma de homens e mulheres à bordo.
+
+Resposta
+
+```{r}
+apply(Titanic, 2, sum)
+```
+
+### b. Construa uma tabela com a soma de sobreviventes pela variável Sex.
+
+Resposta
+
+```{r}
+head(Titanic)
+apply(Titanic, c(2, 4), sum)
+```
+
+### c. Obtenha uma tabela com a quantidade de passageiros pelas variáveis Sex e Age.
+
+Resposta
+
+```{r}
+apply(Titanic, c(2, 3), sum)
+```
+
+
+### 5. Extração de elementos de uma lista de matrizes, usando lapply:
+
+### a. Crie uma lista de quatro matrizes e denomine-a lista.obj. Seus elementos são:
+primeira <- matrix(38:66, 3)
+segunda <- matrix(56:91, 3)
+terceira <- matrix(82:145, 3)
+quarta <- matrix(46:93, 5)
+lista.obj<-list(primeira, segunda, terceira, quarta)
+
+Resposta
+
+```{r warning=FALSE}
+primeira <- matrix(38:66, 3)
+segunda <- matrix(56:91, 3)
+terceira <- matrix(82:145, 3)
+quarta <- matrix(46:93, 5)
+lista.obj<-list(primeira, segunda, terceira, quarta)
+```
+
+### b. Extraia a segunda coluna de cada matriz dessa lista de matrizes.
+
+Resposta
+
+```{r}
+lapply(lista.obj, function(x) x[ ,2])
+```
+
+### c. Extraia a terceira linha de cada matriz dessa lista de matrizes.
+
+Resposta
+
+```{r}
+lapply(lista.obj, function(x) x[3, ])
+```
+
+## 6. Gráficos usando a família apply – conjunto de dados iris{datasets}:
+
+### a. Obtenha um box-plot de cada variável quantitativa do conjunto de dados, estratificada pela variável Species.
+
+Resposta
+
+```{r}
+par(mfrow = c(2, 2))
+
+bp <- sapply(names(iris)[1:4], function(x) {boxplot(as.formula(paste(x, "~ Species")), data = iris, main = x, xlab = "", ylab = "", col = c("red", "green", "blue"), las = 2)})
+```
+
+### b. O pacote "vioplot" tem a função vioplot para construção de violin plots (verifique seu formato!). Construa violin plots de cada variável quantitativa do conjunto de dados, estratificando-a pelo fator Species. Remova todos os números do eixo x e usa a cor “salmon”.
+
+Resposta
+
+```{r message=FALSE, warning=FALSE}
+library(vioplot)
+par(mfrow = c(2, 2))
+
+vioplot(Sepal.Length ~ Species, data = iris, col = "salmon", xaxt = "n", main = "Comprimento da Sépala")
+vioplot(Sepal.Width ~ Species, data = iris, col = "salmon", xaxt = "n", main = "Largura da Sépala")
+vioplot(Petal.Length ~ Species, data = iris, col = "salmon", xaxt = "n", main = "Comprimento da Pétala")
+vioplot(Petal.Width ~ Species, data = iris, col = "salmon", xaxt = "n", main = "Largura da Pétala")
+
+```
+
+## 7. Classes de data frames – família apply:
+
+### a. Descubra qual das variáveis do conjunto de dados iris não é numérica.
+
+Resposta
+
+Não numerico: Species
+```{r}
+lapply(iris, class)
+```
+
+### b. Identifique os níveis desse fator (utilize a função level).
+
+Resposta
+
+```{r}
+lapply(iris, levels)
+```
+
+### c. Ao invés disso, experimente a função unique e compare a saída.
+
+Resposta
+
+```{r}
+unique(iris$Species)
+```
+
+### d. Repita o item (a) usando estruturas de controle. Compare o tempo entre as duas abordagens (Estruturas de controle e família apply).
+
+Resposta
+
+```{r}
+va <- c()
+f <- for (i in iris$Species) {
+  if (!(i %in% va)) {
+    va <- c(va, i)
+  }
+}
+
+system.time(replicate(10000, unique(iris$Species)))
+system.time(replicate(10000, f))
+```
+
+## 8. Conjunto de dados – diamonds{ggplot2}:
+
+### a. Quais são as colunas de classe não numérica?
+
+Resposta
+
+Não numéricas: cut, color e clarity
+```{r}
+library(ggplot2)
+lapply(diamonds, class)
+```
+
+### b. Obtenha a média das colunas 8, 9 e 10 das observações 10000 a 11000.
+
+Resposta
+
+```{r}
+apply(diamonds[10000:11000, 8:10], 2, mean)
+```
+
+### c. Repita (b), arredondando para um dígito.
+
+Resposta
+
+```{r}
+round(apply(diamonds[10000:11000, 8:10], 2, mean), 1)
+```
+
+### d. Ordene os resultados arredondados em ordem crescente.
+
+Resposta
+
+```{r}
+ordered(round(apply(diamonds[10000:11000, 8:10], 2, mean), 1))
+```
+
+
+## 9. Função aggregate – Conjunto de dados – mtcars{datasets}:
+
+### a. Calcule a mediana de cada coluna ordenada pelo número de carburadores. Use os argumentos padrão "x", "by" e "FUN".
+
+Resposta
+
+```{r}
+aggregate(mtcars[, -11], list(carb = mtcars$carb), median, na.rm = TRUE)
+```
+
+### b. Repita o item(a), usando a notação ‘formula’ como argumento.
+
+Resposta
+
+```{r}
+aggregate(mtcars[, -11], list(carb = mtcars$carb), function(x) median)
+```
+
+
+## 10. A função system.time retorna o tempo de operações em R. Verifique como esse comando funciona. Para uma matriz X, 107 × 2 e um vetor y de comprimento 107, calcule (algumas quantas vezes) o produto Xty, usando multiplicação de matrizes e a função crossproduct. Qual é o procedimento mais rápido?
+
+Resposta
+
+```{r}
+x <- matrix(1:107, 107, 2)
+y <- 1:107
+
+system.time(replicate(10000,mapply(prod,x, y)))
+system.time(replicate(10000,crossprod(x, y)))
+```

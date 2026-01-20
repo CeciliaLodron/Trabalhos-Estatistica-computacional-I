@@ -1,0 +1,218 @@
+---
+title: "064-251_Atv02-Cecilia-Lodron-Gonzaga.pdf"
+author: "Cecilia"
+date: "2025-06-14"
+output: html_document
+---
+
+# Exercício 1
+
+**Crie os vetores:**
+
+**a.** *(1; 2; 3; . . . ; 19; 20)*
+
+R = O vetor de 1 à 20 pode ser criado de duas formas, pelo próprio comando de vetor, ou criando uma sequência: 
+```{r echo=TRUE}
+c(1:20)
+#comando: vetor de 1 até 20/c(início:fim)
+
+seq(from = 1, to = 20, by = 1)
+#comando: sequência de 1 até 20, aumentando 1/seq(from = primeiro, to = ultimo, by = acrésimo)
+```
+
+
+**b.** *(20; 19; ... ; 2; 1)*
+
+R = O vetor de 20 à 1 pode ser criado de duas formas, pelo próprio comando de vetor, ou criando uma sequência:
+```{r echo=TRUE}
+c(20:1)
+#comando: vetor de 20 até 1/c(início:fim)
+
+seq(from = 20, to = 1, by = -1)
+#comando: sequência de 20 até 1, diminuindo 1/seq(from = primeiro, to = ultimo, by = decrésimo)
+```
+
+**c.** *(1; 2; 3; . . . ; 19; 20; 19; 18; . . . ; 2; 1)*
+
+R = O vetor de 1 a 20 e depois de 19 a 1 pode ser gerado criando-se um vetor que possui dois parâmetros, uma sequência de 1 à 20 e outra de 19 à 1:
+```{r echo=TRUE} 
+c(1:20, 19:1) 
+#comando: vetor com a primeira váriável uma sequência de 1 até 20 e a segunda variável de 19 até 1/c(c(1:20), c(19:1))
+```
+
+**d.** *(4; 6; 3) e atribua a ele o nome tmp.*
+
+R = Criação simples de tmp por meio do c(): 
+```{r echo=TRUE}
+tmp <- c(4, 6, 3) 
+#criando o vetor tmp
+
+tmp
+```
+
+\newpage
+
+# Exercício 2
+
+**Use a função rep para criar os seguintes vetores (não deixe de verificar o help dessa função):**
+
+**a.** *(4; 6; 3; 4; 6; 3; … ; 4; 6; 3) no qual há 10 ocorrências de 4.*
+
+R = Para criarmos o vetor acima, utilizamos o vetor tmp criado no exercício anterior, assim, usamos uma repetição de tmp dez vezes. 
+```{r}
+rep(tmp, 10)
+#comando: repete tmp 10 vezes/rep(vetor, repetições)
+```
+
+**b.** *(4; 6; 3; 4; 6; 3; … ; 4; 6; 3; 4) no qual há 11 ocorrências de 4, 10 ocorrências de 6 e 10 ocorrências de 3.*
+
+R = 
+```{r}
+rep(tmp, length.out = 31) 
+#comando: repete tmp até dar 31 = 11+10+10/rep(vetor, length.out = limite)
+```
+
+**c.** *(4; 4; … ; 4; 6; 6; … ; 6; 3; 3; … ; 3) no qual há 10 ocorrências de 4, 20 ocorrências de 6 e 30 ocorrências de 3.*
+
+R = 
+```{r}
+rep(tmp, c(10, 20, 30))
+#comando: repete tmp de acordo com o vetor, ou seja, repete a primeira váriavel de tmp 10 vezes, a segunda 20 vezes e a terceira 30 vezes/rep(vetor, vetor repetição)
+```
+
+\newpage
+
+# Exercício 3
+
+**Crie um vetor dos valores de $e^xcos(x)$, para $x=3;3,1;3,2...6$.**
+
+R = 
+```{r echo=TRUE}
+x <- seq(from = 3, to = 6, by = 0.1)
+#cria uma sequência com os valores de x
+
+c(exp(x)*cos(x))
+#coloca a fórmula em um vetor, que já calcula para cada valor de x
+```
+
+\newpage
+
+# Exercício 4
+
+**Crie os seguintes vetores:**
+
+**a.** $(0,1^3x0,2; 0,1^6x0,2^4;...;0,1^36x0,2^34)$
+
+R = Nesse exercício, podemos perceber duas sequências, as dos expoentes, e duas repetições, as dos coeficientes. Podemos colocar a fórmula de tal maneira:
+```{r}
+exp1 <- seq(3, 36, by = 3)
+exp2 <- seq(1, 34, by = 3)
+#criamos a sequência de expoentes, que na fórumula o expoente de 0,1 é uma sequência de 3 acrescido de 3 até 36, e o expoente de 0,2 é 1 até 34 acrescido também de 3.
+
+tam <- length(exp1)
+#calculando o tamanho os vetores exp1 = exp2
+
+coef1 <- rep(0.1, tam)
+coef2 <- rep(0.2, tam)
+#geramos uma sequência de coeficientes baseadas no tamanho dos vetores expoentes
+
+c((coef1**exp1)*(coef2**exp2))
+#vetor que calcula de forma vetorial cada valor dos expoentes e coeficientes em sequência
+```
+
+**b.** $\Big(2, \frac{2^2}{2}, \frac{2^3}{3}, ..., \frac{2^{25}}{25}\Big)$
+
+R = Podemos perceber na fórmula dada que ela possui uma sequência de expoentes de 1 à 25 e uma repetição de 2 logo, semelhante ao exercício anterior, temos:
+```{r}
+aux <- c(1:25)
+c((2**(aux)/aux))
+```
+
+\newpage
+
+#Exercício 5
+
+**Calcule os seguintes somatórios:**
+
+**a.** $\sum_{i=10}^{100} (i^3+4i^2)$
+
+R = Pela fórmula acima, queremos chegar em um valor real que seja o somatório da sequência de 1 até 10 da fórmula dada, logo:
+```{r}
+i <- seq(from = 10, to = 100, by = 1)
+sum((i**3)+(4*(i**2)))
+#criamos o somatório da sequência de 10 até 100, que gera um valor real
+```
+
+**b.** $\sum_{i = 1}^{25}\Big(\frac{2i}{i}+\frac{3î}{i^2}\Big)$
+
+R = Esse exercício é semelhante ao anterior, com a diferença da fórmula e da sequência de i, que vai de 1 até 25
+```{r}
+i2 <- c(1:25)
+sum(((2**i2)/i2)+((3**i2)/i2**2))
+```
+
+\newpage
+
+# Exercício 6
+
+**Use a função paste para criar os seguintes vetores de caracteres de comprimento 30:**
+
+**a.** *(“rotulo 1”, “rotulo 2”, ..., “rotulo 30”). Importante: há um único espaço entre rotulo e o número.*
+
+R = Nesse exercício, a função paste é utilizada para criar uma string de caracteres.
+```{r}
+paste("rotulo", 1:30, sep = " ")
+#comando: paste("caracteres", repetição, sep = "separador de cada caractere")
+```
+
+**b.** *(“fn1”, “fn2”, ..., “fn30”). Importante: não há espaço entre fn e o número*
+
+R = Exercício sememelhante ao anterior, porém com outros caracteres e sem separação 
+```{r}
+paste("fn", 1:30, sep = "")
+#sep = "" indica nenhum caractere para separação
+```
+
+\newpage
+
+# Exercício 7
+
+**Qual é a maneira mais conveniente para inserir um valor entre dois elementos em uma dada posição de um vetor?**
+
+R = Uma forma simples de inserir um valor em um vetor é utilizando o comando base do R append, na qual possui a seguinte formatação:
+```{r}
+append(1:10, 11, after = 10)
+#comando: na sequência e 1 até 10, adiciona 11 na posição posterior a posição 10
+
+append(c(1, 7, 9, 3, 4), 15, after = 3)
+#por esse comando percebemos que adcionar um vetor "after = 3", o 3 é a posição e não o valor de uma posição do vetor
+```
+
+\newpage
+
+# Exercício 8
+
+**Seja o conjunto de dados juul{ISwR}**
+
+**a.** *Quais as linhas referentes as garotas entre 7 e 14 anos de idade?*
+
+R = No conjunto de dados juul, do pacote ISwR, possui como variável idades de gatoras, na qual pode ser filtrada com o comando subset abaixo:
+```{r}
+library(ISwR)
+data(juul)
+#carregando o pacote ISwR e os dados juul
+
+u <- subset(juul, sex==2 & age>=7 & age<=14)
+summary(u)
+#o comando summary serve para reduzir a tabela de dados da variável u, que são os dados filtrados de pessoas do sexo feminino (sex = 2) com idades de 7 à 14
+```
+
+**b.** *Qual a média da variável igf1 para as garotas entre 7 e 14 anos de idade?*
+
+R = A média das variáveis filtradas no exercício anterior é:
+```{r}
+mean(u$igf1, na.rm = TRUE)
+#média retirando valores NA
+```
+
+
